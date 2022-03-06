@@ -9,22 +9,34 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
+  const [nextLink, setNextLink] = useState(null);
+  const [prevLink, setPrevLink] = useState(null);
 
-  useEffect(() => {
+  const callApi = (url) => {
     setIsLoading(true);
-    axios.get('https://swapi.dev/api/people/')
+    axios.get(url)
     .then((res) => {
       setIsLoading(false);
       setResults(res.data.results)
       if(res.data.next === null)
         setIsNextDisabled(true);
+      else
+        setIsNextDisabled(false);
       if(res.data.previous === null)
         setIsPrevDisabled(true);
+      else
+        setIsPrevDisabled(false);
+      setNextLink(res.data.next);
+      setPrevLink(res.data.previous);
     })
     .catch((err) => {
       setIsLoading(false);
       console.log(err)
     })
+  }
+
+  useEffect(() => {
+    callApi('https://swapi.dev/api/people/');
   }, [])
   return (
     <div>
@@ -57,8 +69,12 @@ function App() {
             ))}
           </Table>
           <div className="pagination-buttons">
-            <Button primary className="prev-button" disabled={isPrevDisabled}>Prev</Button>
-            <Button primary className="next-button" disabled={isNextDisabled}>Next</Button>
+            <Button primary className="prev-button" disabled={isPrevDisabled} onClick={() => {
+              callApi(prevLink)
+            }}>Prev</Button>
+            <Button primary className="next-button" disabled={isNextDisabled} onClick={() => {
+              callApi(nextLink)
+            }}>Next</Button>
           </div>
         </div>
       )}
