@@ -12,7 +12,6 @@
 }
 
 .search-container {
-  margin-top: 50px;
   margin-bottom: 20px;
   width: 100%;
   text-align: right;
@@ -26,4 +25,8 @@
 .no-results {
   text-align: center;
   font-size: xx-large;
+}
+
+.total-count {
+  margin-top: 50px !important;
 }

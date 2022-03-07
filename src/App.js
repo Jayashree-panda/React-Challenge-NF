@@ -1,9 +1,9 @@
 import axios from 'axios';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { Loader, Button, Table, Input } from 'semantic-ui-react';
+import { Loader, Button, Table, Input, Icon } from 'semantic-ui-react';
 
-const tableHeaders = ["Name", "Height", "Mass", "Hair Color", "Skin Color", "Eye Color", "Birth Year", "Gender", "Created", "Edited"]
+const tableHeaders = ["Species", "Name", "Height", "Mass", "Hair Color", "Skin Color", "Eye Color", "Birth Year", "Gender", "Created", "Edited"]
 function App() {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +12,21 @@ function App() {
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [nextLink, setNextLink] = useState(null);
   const [prevLink, setPrevLink] = useState(null);
+  const [totalCount, setTotalCount] = useState(null);
+
+  const getSpeciesApi = (url, index) => {
+    if(url) {
+      axios.get(url)
+      .then((res) => {
+        const resultsCopy = [...results];
+        resultsCopy[index]["species_name"] = res.data.name;
+        setResults(resultsCopy);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+    }
+  }
 
   const callApi = (url) => {
     setIsLoading(true);
@@ -27,6 +42,10 @@ function App() {
         setIsPrevDisabled(true);
       else
         setIsPrevDisabled(false);
+      setTotalCount(res.data.count);
+      res.data.results.map((elem, index) => {
+        getSpeciesApi(elem.species?.[0], index)
+      })
       setNextLink(res.data.next);
       setPrevLink(res.data.previous);
     })
@@ -42,6 +61,7 @@ function App() {
   return (
     <div>
       {isLoading && <Loader active />}
+      <div className="total-count">Total Count: {totalCount}</div>
       <div className="search-container">
         <Input placeholder="Search by name..." onChange={(e, data)=> {
           setSearchQuery(data.value);
@@ -64,6 +84,9 @@ function App() {
             {results.map((item) => (
               <Table.Body>
                 <Table.Row>
+                  <Table.Cell>
+                    {item?.species_name === "Droid" ? <Icon name='android' size='large' /> : item?.species_name === "Human" ? <Icon name='user circle' size='large' /> : <Icon name='question circle' size='large'/>}
+                  </Table.Cell>
                   <Table.Cell>{item.name}</Table.Cell>
                   <Table.Cell>{item.height}</Table.Cell>
                   <Table.Cell>{item.mass}</Table.Cell>
