@@ -27,26 +27,45 @@ function App() {
   const [prevLink, setPrevLink] = useState(null);
   const [totalCount, setTotalCount] = useState(null);
 
-  const getSpeciesApi = (url, index) => {
-    if(url) {
-      axios.get(url)
-      .then((res) => {
-        const resultsCopy = [...results];
-        console.log(resultsCopy[index]);
-        resultsCopy[index]["species_name"] = res.data.name;
-        setResults(resultsCopy);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-    }
+  // const getSpeciesApi = (url, index) => {
+  //   if(url) {
+  //     axios.get(url)
+  //     .then((res) => {
+  //       const resultsCopy = [...results];
+  //       console.log(resultsCopy[index]);
+  //       resultsCopy[index]["species_name"] = res.data.name;
+  //       setResults(resultsCopy);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     })
+  //   }
+  // }
+
+  const getSpeciesData = (peopleResults) => {
+    peopleResults.map((elem, index) => {
+      if(elem.species?.[0]) {
+        axios.get(elem.species?.[0])
+        .then((res) => {
+          const resultsCopy = [...peopleResults];
+          console.log(resultsCopy[index]);
+          resultsCopy[index]["species_name"] = res.data.name;
+          setResults(resultsCopy);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+      } else {
+        setResults(peopleResults);        
+      }
+    })
+
   }
 
   const callApi = (url) => {
     setIsLoading(true);
     axios.get(url)
     .then((res) => {
-      setResults(res.data.results)
       if(res.data.next === null)
         setIsNextDisabled(true);
       else
@@ -59,9 +78,7 @@ function App() {
       setNextLink(res.data.next);
       setPrevLink(res.data.previous);
       setIsLoading(false);
-      res.data.results.map((elem, index) => {
-        getSpeciesApi(elem.species?.[0], index)
-      })
+      getSpeciesData(res.data.results);
     })
     .catch((err) => {
       setIsLoading(false);
@@ -72,10 +89,7 @@ function App() {
   useEffect(() => {
     callApi('https://swapi.dev/api/people/');
   }, [])
-
-  useEffect(() => {
-    // console.log(results)
-  }, [results]);
+  
   return (
     <div>
       {isLoading && <Loader active />}
