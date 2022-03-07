@@ -1,12 +1,13 @@
 import axios from 'axios';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { Loader, Button, Table } from 'semantic-ui-react';
+import { Loader, Button, Table, Input } from 'semantic-ui-react';
 
 const tableHeaders = ["Name", "Height", "Mass", "Hair Color", "Skin Color", "Eye Color", "Birth Year", "Gender", "Created", "Edited"]
 function App() {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(false);
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
   const [isNextDisabled, setIsNextDisabled] = useState(false);
   const [nextLink, setNextLink] = useState(null);
@@ -41,8 +42,17 @@ function App() {
   return (
     <div>
       {isLoading && <Loader active />}
+      <div className="search-container">
+        <Input placeholder="Search by name..." onChange={(e, data)=> {
+          setSearchQuery(data.value);
+        }} className="input-search" />
+        <Button primary className="search-button" onClick={() => {
+          callApi(`https://swapi.dev/api/people/?search=${searchQuery}`);
+        }}>Search</Button>
+      </div>
+      {!isLoading && results.length === 0 && <p className="no-results">No Results Found!</p>}
       {!isLoading && results.length !== 0 &&  (
-        <div>
+        <div className="parent-container">
           <Table celled>
             <Table.Header>
               <Table.Row>

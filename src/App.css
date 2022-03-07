@@ -10,3 +10,20 @@
 .next-button {
   margin-right: 50px !important;
 }
+
+.search-container {
+  margin-top: 50px;
+  margin-bottom: 20px;
+  width: 100%;
+  text-align: right;
+}
+
+.input-search {
+  width: 20%;
+  margin-right: 10px;
+}
+
+.no-results {
+  text-align: center;
+  font-size: xx-large;
+}
