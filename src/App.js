@@ -1,9 +1,22 @@
 import axios from 'axios';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { Loader, Button, Table, Input, Icon } from 'semantic-ui-react';
+import { Loader, Button, Table, Input, Icon, Dropdown } from 'semantic-ui-react';
 
 const tableHeaders = ["Species", "Name", "Height", "Mass", "Hair Color", "Skin Color", "Eye Color", "Birth Year", "Gender", "Created", "Edited"]
+const dropdownOptions = [
+  {
+    key: 0,
+    text: '(Low to High) Mass',
+    value: 1,
+  },
+  {
+    key: 1,
+    text: "(Low to High) Height",
+    value: 2,
+  },
+];
+
 function App() {
   const [results, setResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +32,7 @@ function App() {
       axios.get(url)
       .then((res) => {
         const resultsCopy = [...results];
+        console.log(resultsCopy[index]);
         resultsCopy[index]["species_name"] = res.data.name;
         setResults(resultsCopy);
       })
@@ -32,7 +46,6 @@ function App() {
     setIsLoading(true);
     axios.get(url)
     .then((res) => {
-      setIsLoading(false);
       setResults(res.data.results)
       if(res.data.next === null)
         setIsNextDisabled(true);
@@ -43,11 +56,12 @@ function App() {
       else
         setIsPrevDisabled(false);
       setTotalCount(res.data.count);
+      setNextLink(res.data.next);
+      setPrevLink(res.data.previous);
+      setIsLoading(false);
       res.data.results.map((elem, index) => {
         getSpeciesApi(elem.species?.[0], index)
       })
-      setNextLink(res.data.next);
-      setPrevLink(res.data.previous);
     })
     .catch((err) => {
       setIsLoading(false);
@@ -58,11 +72,16 @@ function App() {
   useEffect(() => {
     callApi('https://swapi.dev/api/people/');
   }, [])
+
+  useEffect(() => {
+    // console.log(results)
+  }, [results]);
   return (
     <div>
       {isLoading && <Loader active />}
       <div className="total-count">Total Count: {totalCount}</div>
       <div className="search-container">
+        <Dropdown placeholder="Sort" options={dropdownOptions} selection className="sort-dropdown" clearable/>
         <Input placeholder="Search by name..." onChange={(e, data)=> {
           setSearchQuery(data.value);
         }} className="input-search" />
