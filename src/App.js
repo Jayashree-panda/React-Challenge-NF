@@ -8,17 +8,18 @@ const dropdownOptions = [
   {
     key: 0,
     text: '(Low to High) Mass',
-    value: 1,
+    value: 'mass',
   },
   {
     key: 1,
     text: "(Low to High) Height",
-    value: 2,
+    value: 'height',
   },
 ];
 
 function App() {
   const [results, setResults] = useState([]);
+  const [resultsOriginal, setResultsOriginal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(false);
   const [isPrevDisabled, setIsPrevDisabled] = useState(false);
@@ -26,21 +27,22 @@ function App() {
   const [nextLink, setNextLink] = useState(null);
   const [prevLink, setPrevLink] = useState(null);
   const [totalCount, setTotalCount] = useState(null);
+  const [sortByValue, setSortByValue] = useState("");
 
-  // const getSpeciesApi = (url, index) => {
-  //   if(url) {
-  //     axios.get(url)
-  //     .then((res) => {
-  //       const resultsCopy = [...results];
-  //       console.log(resultsCopy[index]);
-  //       resultsCopy[index]["species_name"] = res.data.name;
-  //       setResults(resultsCopy);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     })
-  //   }
-  // }
+  const onSortByChange = (e, data) => {
+    setSortByValue(data.value);
+    if(data.value === "") {
+      setResults(resultsOriginal);
+      return;
+    }
+    const resultsCopy = [...results];
+    resultsCopy.sort((a, b) => {
+      if( parseInt(a[data.value]) < parseInt(b[data.value])) return -1;
+      else if(parseInt(a[data.value]) > parseInt(b[data.value])) return 1;
+      return 0;
+    })  
+    setResults(resultsCopy);
+  }
 
   const getSpeciesData = (peopleResults) => {
     peopleResults.map((elem, index) => {
@@ -51,12 +53,14 @@ function App() {
           console.log(resultsCopy[index]);
           resultsCopy[index]["species_name"] = res.data.name;
           setResults(resultsCopy);
+          setResultsOriginal(resultsCopy);
         })
         .catch((err) => {
           console.log(err);
         })
       } else {
-        setResults(peopleResults);        
+        setResults(peopleResults);   
+        setResultsOriginal(peopleResults);
       }
     })
 
@@ -89,19 +93,35 @@ function App() {
   useEffect(() => {
     callApi('https://swapi.dev/api/people/');
   }, [])
-  
+
   return (
     <div>
       {isLoading && <Loader active />}
       <div className="total-count">Total Count: {totalCount}</div>
       <div className="search-container">
-        <Dropdown placeholder="Sort" options={dropdownOptions} selection className="sort-dropdown" clearable/>
+        <Dropdown 
+          placeholder="Sort" 
+          value={sortByValue}
+          options={dropdownOptions} 
+          selection 
+          className="sort-dropdown" 
+          clearable 
+          selectOnBlur={false}
+          onChange={onSortByChange} 
+        />
         <Input placeholder="Search by name..." onChange={(e, data)=> {
           setSearchQuery(data.value);
         }} className="input-search" />
-        <Button primary className="search-button" onClick={() => {
-          callApi(`https://swapi.dev/api/people/?search=${searchQuery}`);
-        }}>Search</Button>
+        <Button 
+          primary 
+          className="search-button" 
+          onClick={() => {
+            setSortByValue("");
+            callApi(`https://swapi.dev/api/people/?search=${searchQuery}`);
+          }}
+          >
+          Search
+        </Button>
       </div>
       {!isLoading && results.length === 0 && <p className="no-results">No Results Found!</p>}
       {!isLoading && results.length !== 0 &&  (
