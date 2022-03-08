@@ -50,7 +50,6 @@ function App() {
         axios.get(elem.species?.[0])
         .then((res) => {
           const resultsCopy = [...peopleResults];
-          console.log(resultsCopy[index]);
           resultsCopy[index]["species_name"] = res.data.name;
           setResults(resultsCopy);
           setResultsOriginal(resultsCopy);
