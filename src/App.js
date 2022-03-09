@@ -45,14 +45,14 @@ function App() {
   }
 
   const getSpeciesData = (peopleResults) => {
-    peopleResults.map((elem, index) => {
+    peopleResults.forEach((elem, index) => {
       if(elem.species?.[0]) {
         axios.get(elem.species?.[0])
         .then((res) => {
-          const resultsCopy = [...peopleResults];
-          resultsCopy[index]["species_name"] = res.data.name;
-          setResults(resultsCopy);
-          setResultsOriginal(resultsCopy);
+          // const resultsCopy = [...peopleResults];
+          // resultsCopy[index]["species_name"] = res.data.name;
+          // setResults(resultsCopy);
+          // setResultsOriginal(resultsCopy);
         })
         .catch((err) => {
           console.log(err);
