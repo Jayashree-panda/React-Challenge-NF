@@ -159,9 +159,11 @@ function App() {
           </Table>
           <div className="pagination-buttons">
             <Button primary className="prev-button" disabled={isPrevDisabled} onClick={() => {
+              setSortByValue("");
               callApi(prevLink)
             }}>Prev</Button>
             <Button primary className="next-button" disabled={isNextDisabled} onClick={() => {
+              setSortByValue("");
               callApi(nextLink)
             }}>Next</Button>
           </div>
