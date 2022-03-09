@@ -49,10 +49,10 @@ function App() {
       if(elem.species?.[0]) {
         axios.get(elem.species?.[0])
         .then((res) => {
-          // const resultsCopy = [...peopleResults];
-          // resultsCopy[index]["species_name"] = res.data.name;
-          // setResults(resultsCopy);
-          // setResultsOriginal(resultsCopy);
+          const resultsCopy = [...peopleResults];
+          resultsCopy[index]["species_name"] = res.data.name;
+          setResults(resultsCopy);
+          setResultsOriginal(resultsCopy);
         })
         .catch((err) => {
           console.log(err);
