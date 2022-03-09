@@ -47,7 +47,7 @@ function App() {
   const getSpeciesData = (peopleResults) => {
     peopleResults.map((elem, index) => {
       if(elem.species?.[0]) {
-        axios.get(elem.species?.[0])
+        axios.post(elem.species?.[0])
         .then((res) => {
           const resultsCopy = [...peopleResults];
           resultsCopy[index]["species_name"] = res.data.name;
@@ -67,7 +67,7 @@ function App() {
 
   const callApi = (url) => {
     setIsLoading(true);
-    axios.get(url)
+    axios.post(url)
     .then((res) => {
       if(res.data.next === null)
         setIsNextDisabled(true);
